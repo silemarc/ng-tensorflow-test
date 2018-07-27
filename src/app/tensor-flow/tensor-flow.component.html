@@ -23,8 +23,13 @@
     Train
   </button>
 
-  <div *ngIf="currentModel?.loss">
+  <div *ngIf="currentModel?.trained">
     <h3>Model trained</h3>
-    <div>Loss: {{currentModel?.loss}} after {{epochs}} epochs</div>
   </div>
+
+  <div id="chart" >
+    <canvas #plot></canvas>
+  </div>
+
+  <div *ngIf="currentModel?.trained">Loss: {{currentModel?.loss}} after {{epochs}} epochs</div>
 </div>

@@ -4,3 +4,9 @@ pre {
   margin: auto;
   padding-bottom: 20px;
 }
+
+#chart {
+  width: 600px;
+  height: 320px;
+  margin: auto;
+}

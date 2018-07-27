@@ -8,6 +8,8 @@ export class Simple {
   xs: any;
   ys: any;
   loss: number;
+  trainHistory: any;
+  trained = false;
 
   defineModel() {
     console.log('Start defining model...');
@@ -22,13 +24,20 @@ export class Simple {
   }
 
 
-  train(epochs = 100) {
-    this.model.fit(this.xs, this.ys, {
+  async train(epochs = 100) {
+    this.trainHistory = []
+    this.trained = false;
+    return await this.model.fit(this.xs, this.ys, {
       epochs: epochs,
       callbacks: {
         onEpochEnd: async (epoch, log) => {
           console.log(`Epoch ${epoch}: loss = ${log.loss}`);
           this.loss = log.loss;
+          this.trainHistory[epoch] = {x: epoch, y: log.loss  };
+        },
+        onTrainEnd: () => {
+          this.trained = true;
+          return true;
         }
       }
     });
