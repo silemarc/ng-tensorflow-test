@@ -1,0 +1,30 @@
+<div>
+  <button mat-icon-button (click)="simpleModel()">
+    Simple model
+  </button>
+  <br>
+
+</div>
+<!--<p>-->
+<!--<button mat-icon-button *ngIf="currentModel?.model" (click)="(generateSummary())">-->
+<!--Get Summary-->
+<!--</button>-->
+<!--</p>-->
+<div *ngIf="summary">
+
+  <h2>Model Summary</h2>
+
+  <pre [innerHTML]="summary"></pre>
+</div>
+<br>
+<div>
+  <!--<input id='epochs' type="number" (value)="epochs">-->
+  <button mat-icon-button *ngIf="currentModel" (click)="train()">
+    Train
+  </button>
+
+  <div *ngIf="currentModel?.loss">
+    <h3>Model trained</h3>
+    <div>Loss: {{currentModel?.loss}} after {{epochs}} epochs</div>
+  </div>
+</div>
