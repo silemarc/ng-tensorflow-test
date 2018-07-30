@@ -56,9 +56,7 @@ export class TensorFlowComponent implements OnInit {
 
   generateSummary() {
     this.summary = '';
-    this.currentModel.model.summary(null, null, (msg) => {
-      this.summary += `\n${msg}`;
-    });
+    this.summary = this.currentModel.summary();
   }
 
   private plot(data, label, elementRef, chart) {

@@ -9,5 +9,6 @@ export interface GenericModel {
   generateData(params);
   defineModel();
   train(epochs);
-  predict();
+  predict(input);
+  summary();
 }

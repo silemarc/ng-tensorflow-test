@@ -45,6 +45,13 @@ export class Simple implements GenericModel {
     });
   }
 
-  predict() {
+  predict(input) {
+  }
+
+  summary() {
+    let summary = '';
+    this.model.summary(null, null, (msg) => {
+      summary += `\n${msg}`;
+    });
   }
 }

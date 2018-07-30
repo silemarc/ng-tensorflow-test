@@ -8,6 +8,13 @@ export class SimpleRegression implements GenericModel {
   trained: boolean;
   xs: any;
   ys: any;
+  a = tf.variable(tf.scalar(Math.random()));
+  b = tf.variable(tf.scalar(Math.random()));
+  c = tf.variable(tf.scalar(Math.random()));
+  d = tf.variable(tf.scalar(Math.random()));
+  learningRate = 0.5;
+  optimizer = tf.train.sgd(this.learningRate);
+
 
   generateData(params) {
     const numPoints = params['numPoints'];
@@ -37,22 +44,65 @@ export class SimpleRegression implements GenericModel {
     const ymax = ys.max();
     const yrange = ymax.sub(ymin);
     this.ys = ys.sub(ymin).div(yrange);
+    tf.dispose(ys);
+    tf.dispose(ymax);
+    tf.dispose(yrange);
   }
 
   defineModel() {
-    this.model = tf.sequential();
-    this.model.add(tf.layers.dense({units: 4, activation: 'relu', inputShape: [10]}));
-    this.model.add(tf.layers.dense({units: 1, activation: 'linear'}));
-    this.model.compile({optimizer: 'sgd', loss: 'meanSquaredError'});
   }
 
-  train(epochs) {
-    // TODO
+  summary() {
+    return `<span>a=${this.a.toString()}, b=${this.b.toString()}, c=${
+      this.c.toString()},  d=${this.d.toString()}</span>`;
   }
 
-  predict() {
-    // TODO
+  async train(epochs) {
+    this.trainHistory = [];
+    for (let iter = 0; iter < epochs; iter++) {
+      // optimizer.minimize is where the training happens.
+
+      // The function it takes must return a numerical estimate (i.e. loss)
+      // of how well we are doing using the current state of
+      // the variables we created at the start.
+
+      // This optimizer does the 'backward' step of our training process
+      // updating variables defined previously in order to minimize the
+      // loss.
+      this.optimizer.minimize(() => {
+        // Feed the examples into the model
+        const lossRes = this.lossFunction(this.predict(this.xs), this.ys);
+        this.trainHistory[iter] = {x: iter, y: this.loss};
+        // this.loss = lossRes.toFixed(2);
+        return lossRes;
+      });
+
+      // Use tf.nextFrame to not block the browser.
+      await tf.nextFrame();
+
+
+    }
   }
 
+  predict(x) {
+      return this.a.mul(x.pow(tf.scalar(3, 'int32')))
+        .add(this.b.mul(x.square()))
+        .add(this.c.mul(x))
+        .add(this.d);
+  }
+
+
+  /*
+ * This will tell us how good the 'prediction' is given what we actually
+ * expected.
+ *
+ * prediction is a tensor with our predicted y values.
+ * labels is a tensor with the y values the model should have predicted.
+ */
+  private lossFunction(prediction, labels) {
+    // Having a good error function is key for training a machine learning model
+    const error = prediction.sub(labels).square().mean();
+    return error;
+  }
 
 }

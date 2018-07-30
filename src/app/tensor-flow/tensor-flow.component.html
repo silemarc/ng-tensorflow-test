@@ -40,5 +40,5 @@
     <canvas #trainPlot></canvas>
   </div>
 
-  <div *ngIf="currentModel?.trained">Loss: {{currentModel?.loss}} after {{epochs}} epochs</div>
+  <div *ngIf="currentModel?.trained && currentModel?.loss">Loss: {{currentModel?.loss}} after {{epochs}} epochs</div>
 </div>
