@@ -1,6 +1,9 @@
 <div>
-  <button mat-icon-button (click)="simpleModel()">
+  <button mat-icon-button (click)="simpleModel()" class="startModel">
     Simple model
+  </button>
+  <button mat-icon-button (click)="regressionModel()" class="startModel">
+    Regression model
   </button>
   <br>
 
@@ -17,6 +20,12 @@
   <pre [innerHTML]="summary"></pre>
 </div>
 <br>
+
+<div class="chart" >
+  <canvas #plot1></canvas>
+</div>
+
+
 <div>
   <!--<input id='epochs' type="number" (value)="epochs">-->
   <button mat-icon-button *ngIf="currentModel" (click)="train()">
@@ -27,8 +36,8 @@
     <h3>Model trained</h3>
   </div>
 
-  <div id="chart" >
-    <canvas #plot></canvas>
+  <div class="chart" >
+    <canvas #trainPlot></canvas>
   </div>
 
   <div *ngIf="currentModel?.trained">Loss: {{currentModel?.loss}} after {{epochs}} epochs</div>

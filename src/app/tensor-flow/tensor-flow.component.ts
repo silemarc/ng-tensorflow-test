@@ -1,6 +1,8 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {Simple} from './models/simple';
 import Chart from 'chart.js';
+import {SimpleRegression} from './models/simple-regression';
+import {GenericModel} from './models/generic-model';
 
 @Component({
   selector: 'app-tensor-flow',
@@ -9,13 +11,17 @@ import Chart from 'chart.js';
 })
 export class TensorFlowComponent implements OnInit {
 
-  public currentModel: Simple;
+  public currentModel: GenericModel;
   public summary: String;
   public epochs = 100;
 
-  @ViewChild('plot', {read: ElementRef})
-  plotCanvas: ElementRef;
-  private scatterChart: Chart;
+  @ViewChild('plot1', {read: ElementRef})
+  plot1Canvas: ElementRef;
+  private plot1Chart: Chart;
+
+  @ViewChild('trainPlot', {read: ElementRef})
+  trainPlotCanvas: ElementRef;
+  private trainChart: Chart;
 
   constructor() {
   }
@@ -26,16 +32,26 @@ export class TensorFlowComponent implements OnInit {
 
   simpleModel() {
     this.currentModel = new Simple();
+    this.currentModel.generateData({});
     this.currentModel.defineModel();
     this.generateSummary();
+  }
+
+  async regressionModel() {
+    this.currentModel = new SimpleRegression();
+
+    const trueCoefficients = {a: -.8, b: -.2, c: .9, d: .5};
+    this.currentModel.generateData({'coeff': trueCoefficients, 'numPoints': 100});
+    this.plot1Chart = this.plot(await this.prepareDataToPlot(), 'Original data', this.plot1Canvas, this.plot1Chart);
+    this.currentModel.defineModel();
+    this.generateSummary();
+
   }
 
   async train() {
     const res = await this.currentModel.train(this.epochs);
 
-    // if (res) {
-    this.plot();
-    // }
+    this.trainChart = this.plot(this.currentModel.trainHistory, 'Train loss', this.trainPlotCanvas,  this.trainChart);
   }
 
   generateSummary() {
@@ -45,8 +61,8 @@ export class TensorFlowComponent implements OnInit {
     });
   }
 
-  private plot() {
-    const canvas = (<HTMLCanvasElement>this.plotCanvas.nativeElement);
+  private plot(data, label, elementRef, chart) {
+    const canvas = (<HTMLCanvasElement>elementRef.nativeElement);
     const ctx = canvas.getContext('2d');
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -55,8 +71,8 @@ export class TensorFlowComponent implements OnInit {
       type: 'scatter',
       data: {
         datasets: [{
-          label: 'Train loss',
-          data: this.currentModel.trainHistory
+          label: label,
+          data: data
         }]
       },
       options: {
@@ -70,13 +86,22 @@ export class TensorFlowComponent implements OnInit {
       }
     };
 
-    if (this.scatterChart) {
-      this.scatterChart.destroy();
+    if (chart) {
+      chart.destroy();
     }
 
-    this.scatterChart = new Chart(ctx, config);
+    return new Chart(ctx, config);
 
   }
 
+
+  private async prepareDataToPlot() {
+    const xvals = await this.currentModel.xs.data();
+    const yvals = await this.currentModel.ys.data();
+
+    return Array.from(yvals).map((y, i) => {
+      return {'x': xvals[i], 'y': yvals[i]};
+    });
+  }
 
 }

@@ -5,8 +5,12 @@ pre {
   padding-bottom: 20px;
 }
 
-#chart {
+.chart {
   width: 600px;
   height: 320px;
   margin: auto;
+}
+
+.startModel {
+  margin: 12px;
 }
