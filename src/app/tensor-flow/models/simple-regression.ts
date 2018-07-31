@@ -59,6 +59,7 @@ export class SimpleRegression implements GenericModel {
 
   async train(epochs) {
     this.trainHistory = [];
+    this.trained = false;
     for (let iter = 0; iter < epochs; iter++) {
       // optimizer.minimize is where the training happens.
 
@@ -72,8 +73,8 @@ export class SimpleRegression implements GenericModel {
       this.optimizer.minimize(() => {
         // Feed the examples into the model
         const lossRes = this.lossFunction(this.predict(this.xs), this.ys);
+        this.loss = lossRes.dataSync()[0];
         this.trainHistory[iter] = {x: iter, y: this.loss};
-        // this.loss = lossRes.toFixed(2);
         return lossRes;
       });
 
@@ -82,6 +83,7 @@ export class SimpleRegression implements GenericModel {
 
 
     }
+    this.trained = true;
   }
 
   predict(x) {

@@ -17,11 +17,11 @@ export class TensorFlowComponent implements OnInit {
 
   @ViewChild('plot1', {read: ElementRef})
   plot1Canvas: ElementRef;
-  private plot1Chart: Chart;
+  public plot1Chart: Chart;
 
   @ViewChild('trainPlot', {read: ElementRef})
   trainPlotCanvas: ElementRef;
-  private trainChart: Chart;
+  public trainChart: Chart;
 
   constructor() {
   }
@@ -31,6 +31,7 @@ export class TensorFlowComponent implements OnInit {
   }
 
   simpleModel() {
+    this.clean();
     this.currentModel = new Simple();
     this.currentModel.generateData({});
     this.currentModel.defineModel();
@@ -51,7 +52,7 @@ export class TensorFlowComponent implements OnInit {
   async train() {
     const res = await this.currentModel.train(this.epochs);
 
-    this.trainChart = this.plot(this.currentModel.trainHistory, 'Train loss', this.trainPlotCanvas,  this.trainChart);
+    this.trainChart = this.plot(this.currentModel.trainHistory, 'Train loss', this.trainPlotCanvas, this.trainChart);
   }
 
   generateSummary() {
@@ -102,4 +103,14 @@ export class TensorFlowComponent implements OnInit {
     });
   }
 
+  private clean() {
+    if (this.trainChart) {
+      this.trainChart.destroy();
+    }
+    // (<HTMLElement>this.trainPlotCanvas.nativeElement).parentElement;
+    if (this.plot1Chart) {
+      this.plot1Chart.destroy();
+    }
+    this.currentModel = null;
+  }
 }

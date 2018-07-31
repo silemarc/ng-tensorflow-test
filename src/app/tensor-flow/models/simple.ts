@@ -53,5 +53,6 @@ export class Simple implements GenericModel {
     this.model.summary(null, null, (msg) => {
       summary += `\n${msg}`;
     });
+    return summary;
   }
 }
